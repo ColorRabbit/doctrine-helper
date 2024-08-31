@@ -40,15 +40,14 @@ composer require siburuxue/doctrine-helper
 
 ## 同步数据库
 ```shell
-php bin/console doctrine-helper:mapping:import App\\Entity attribute --path=src/Entity --ucfrist=true --table=dict,log --without-table-prefix=eq_
+php bin/console doctrine-helper:mapping:import attribute --path=src/Entity --ucfrist=true --table=dict,log --without-table-prefix=eq_
 php bin/console doctrine-helper:mapping:import --ucfirst=true
 ```
 
 ## 命令行选项
 
-- `namespace`：实体类的命名空间（默认为`App\Entity`）
 - `type`：数据库字段描述信息类型（attribute、xml、yaml、php）（默认为`attribute`，目前只支持`attribute`）
-- `--path`：存储实体类文件的路径（默认为`src/Entity`）
+- `--path`：存储实体类文件的路径（路径为`src/{Entity|Repository}/{$path}`）
 - `--ucfirst=true`：生成Symfony 6风格的实体类（私有属性使用驼峰命名规则），以实现代码无缝迁移（默认为Symfony 7风格，私有属性使用下划线）
 - `--table`：导入指定表以生成相应的实体类和存储库类
 - `--without-table-prefix`：生成实体类时忽略表前缀

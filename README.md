@@ -40,15 +40,14 @@ composer require siburuxue/doctrine-helper
 
 ## Synchronize database tables to the project
 ```shell
-php bin/console doctrine-helper:mapping:import App\\Entity attribute --path=src/Entity --ucfrist=true --table=dict,log --without-table-prefix=eq_
+php bin/console doctrine-helper:mapping:import attribute --path=Test --ucfrist=true --table=dict,log --without-table-prefix=eq_
 php bin/console doctrine-helper:mapping:import --ucfirst=true
 ```
 
 ## Command Line Options
 
-- `namespace`: The namespace for the Entity class (default: `App\Entity`)
 - `type`: Type of database field description (attribute, xml, yaml, php) (default: `attribute`, currently only support `attribute`)
-- `--path`: Path to store Entity class files (default: `src/Entity`)
+- `--path`: Path to store Entity With Repository class files (default: `src/{Entity|Repository}/{$path}`)
 - `--ucfirst=true`: Generate Symfony 6 style Entities (private properties in camelCase) for seamless code migration (default: Symfony 7 style with underscored private properties)
 - `--table`: Import specific tables to generate corresponding Entity and Repository classes
 - `--without-table-prefix`: Ignore table prefix when generating Entities

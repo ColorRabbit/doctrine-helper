@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Helper\Command;
+namespace App\Command;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'doctrine-helper:mapping:import',
-    description: 'instead of `php bin/console doctrine:mapping:import App\\Entity attribute --path=src/Entity` [--ucfirst=true] [--table=test,test1] [--without-table-prefix=eq_]',
+    description: 'instead of `php bin/console doctrine:mapping:import attribute --path=src/Entity` [--ucfirst=true] [--table=test,test1] [--without-table-prefix=eq_]',
 )]
 class DoctrineMappingImportCommand extends Command
 {
@@ -40,9 +40,9 @@ class DoctrineMappingImportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('namespace', InputArgument::OPTIONAL, "the entity's namespace, App\\Entity on default")
+            // ->addArgument('namespace', InputArgument::OPTIONAL, "the entity's namespace, App\\Entity on default")
             ->addArgument('type', InputArgument::OPTIONAL, "attribute, xml, yaml, php; attribute on default")
-            ->addOption('path', "", InputOption::VALUE_OPTIONAL, "the Entity's path, src/Entity on default")
+            ->addOption('path', "", InputOption::VALUE_OPTIONAL, "the Entity's and the Repository's extra path, src/Entity and src/Repository on default")
             ->addOption('table', "t", InputOption::VALUE_OPTIONAL, 'the import tables of the database')
             ->addOption('ucfirst', "", InputOption::VALUE_OPTIONAL, 'convert first character of word to uppercase')
             ->addOption('without-table-prefix', "", InputOption::VALUE_OPTIONAL, 'without table prefix');
@@ -67,7 +67,8 @@ class DoctrineMappingImportCommand extends Command
         if (!file_exists($repositoryDir)) {
             mkdir($repositoryDir);
         }
-        $namespace = (string)$input->getArgument('namespace');
+        $entityNamespace = "App\\Entity";
+        $repositoryNamespace = "App\\Repository";
         $type = (string)$input->getArgument('type');
         if(!empty($type) && !in_array($type, ["attribute", "xml", "yaml", "php"])){
             $io->error("The specified export driver '{$type}' does not exist");
@@ -76,10 +77,17 @@ class DoctrineMappingImportCommand extends Command
         }
         $path = (string)$input->getOption('path');
         if (!empty($path)) {
-            $entityDir = $root . "/" . $path . "/";
+            $entityDir = $entityDir . "/" . $path . "/";
             if (!file_exists($entityDir)) {
                 mkdir($entityDir, 0755, true);
             }
+            $repositoryDir = $repositoryDir . "/" . $path . "/";
+            if (!file_exists($repositoryDir)) {
+                mkdir($repositoryDir, 0755, true);
+            }
+
+            $entityNamespace .= "\\{$path}";
+            $repositoryNamespace .= "\\{$path}";
         }
         $tableList = (string)$input->getOption('table');
         $ucfirst = (string)$input->getOption('ucfirst');
@@ -87,7 +95,8 @@ class DoctrineMappingImportCommand extends Command
         $action = "\Doctrine\Helper\Driver\\$driver::create";
         try {
             $action(
-                $namespace,
+                $entityNamespace,
+                $repositoryNamespace,
                 $type,
                 $tableList,
                 $ucfirst,

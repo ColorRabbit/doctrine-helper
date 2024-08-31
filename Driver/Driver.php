@@ -11,18 +11,23 @@ abstract class Driver
     public string $entityName = "";
 
     public function __construct(
-        public string $namespace,
-        public string $type,
-        public string $tableList,
-        public string $ucfirst,
-        public string $withoutTablePrefix,
-        public string $database,
-        public string $entityDir,
-        public string $repositoryDir,
+        public string     $entityNamespace,
+        public string     $repositoryNamespace,
+        public string     $type,
+        public string     $tableList,
+        public string     $ucfirst,
+        public string     $withoutTablePrefix,
+        public string     $database,
+        public string     $entityDir,
+        public string     $repositoryDir,
         public Connection $connection,
-    ) {
-        if (empty($namespace)) {
-            $this->namespace = "App\\Entity";
+    )
+    {
+        if (empty($entityNamespace)) {
+            $this->entityNamespace = "App\\Entity";
+        }
+        if (empty($repositoryNamespace)) {
+            $this->repositoryNamespace = "App\\Repository";
         }
         if (empty($type)) {
             $this->type = "attribute";
@@ -38,18 +43,21 @@ abstract class Driver
     abstract public function makeProperties();
 
     public static function create(
-        string $namespace,
-        string $type,
-        string $tableList,
-        string $ucfirst,
-        string $withoutTablePrefix,
-        string $database,
-        string $entityDir,
-        string $repositoryDir,
+        string     $entityNamespace,
+        string     $repositoryNamespace,
+        string     $type,
+        string     $tableList,
+        string     $ucfirst,
+        string     $withoutTablePrefix,
+        string     $database,
+        string     $entityDir,
+        string     $repositoryDir,
         Connection $connection,
-    ) {
+    )
+    {
         return new static(
-            $namespace,
+            $entityNamespace,
+            $repositoryNamespace,
             $type,
             $tableList,
             $ucfirst,
@@ -68,7 +76,7 @@ abstract class Driver
             $tables = trim($this->tableList, ',');
             $tables = explode(',', $tables);
             $diff = array_diff($tables, $tableList);
-            if(!empty($diff)){
+            if (!empty($diff)) {
                 throw new \Exception("Tables is not exist: " . implode(", ", $diff));
             }
             $tableList = $tables;
@@ -94,9 +102,9 @@ abstract class Driver
             $content = <<<EOF
 <?php
 
-namespace App\Repository;
+namespace {$this->repositoryNamespace};
 
-use {$this->namespace}\\{$this->entityName};
+use {$this->entityNamespace}\\{$this->entityName};
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -178,9 +186,9 @@ EOF;
         $content = <<<EOF
 <?php
 
-namespace {$this->namespace};
+namespace {$this->entityNamespace};
 
-use App\Repository\\{$entityName}Repository;
+use {$this->repositoryNamespace}\\{$entityName}Repository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
