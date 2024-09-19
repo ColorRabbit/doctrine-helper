@@ -122,31 +122,56 @@ class {$this->entityName}Repository extends ServiceEntityRepository
     {
         parent::__construct(\$registry, {$this->entityName}::class);
     }
+    
+    /**
+     * @return int|mixed|string
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getCount()
+    {
+        return \$this->createQueryBuilder('p')
+            ->select('count(p) as count')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-//    /**
-//     * @return {$this->entityName}[] Returns an array of {$this->entityName} objects
-//     */
-//    public function findByExampleField(\$value): array
-//    {
-//        return \$this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', \$value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @param array \$where
+     * @param array \$order
+     * @param int \$length
+     * @param int \$page
+     * @return array
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function list(array \$where = [], array \$order = [], int \$length = 10, int \$page = 1): array
+    {
+        \$list = \$this->createQueryBuilder('p');
 
-//    public function findOneBySomeField(\$value): ?{$this->entityName}
-//    {
-//        return \$this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', \$value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        \$count = \$list->select('count(p) as count')
+            ->getQuery()->getSingleScalarResult();
+        \$list = \$list->select('p');
+        if (!empty(\$order)) {
+            foreach (\$order as \$key => \$value) {
+                \$list->addOrderBy(\$key, \$value);
+            }
+        }
+
+        if (\$length == -1) {
+            \$list = \$list->getQuery()->getResult();
+
+            return ['count' => \$count, 'list' => \$list];
+        }
+
+        \$list = \$list->setFirstResult(\$length * (\$page - 1))
+            ->setMaxResults(\$length)
+            ->getQuery()
+            ->getResult();
+
+        return ['count' => \$count, 'list' => \$list];
+    }
+
+
 }
 
 EOF;
