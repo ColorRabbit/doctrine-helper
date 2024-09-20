@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'doctrine-helper:mapping:import',
-    description: 'instead of `php bin/console doctrine:mapping:import attribute --path=src/Entity` [--ucfirst=true] [--table=test,test1] [--without-table-prefix=eq_]',
+    description: 'instead of `php bin/console doctrine:mapping:import attribute` [--path=Test] [--ucfirst=true] [--table=test,test1] [--without-table-prefix=eq_]',
 )]
 class DoctrineMappingImportCommand extends Command
 {

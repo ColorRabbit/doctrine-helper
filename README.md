@@ -101,6 +101,7 @@ create index I_int_4
 To generate the corresponding Entity and Repository class files using the command:
 
 ```shell
+php bin/console doctrine-helper:mapping:import attribute --path=Test --ucfrist=true --table=dict,log --without-table-prefix=eq_
 php bin/console doctrine-helper:mapping:import --ucfirst=true --table=test
 ```
 
