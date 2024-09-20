@@ -35,7 +35,7 @@ This tool provides an alternative to the `php bin/console doctrine:mapping:impor
 
 ## Install
 ```shell
-composer require siburuxue/doctrine-helper
+composer require color-rabbit/doctrine-helper --dev
 ```
 
 ## Synchronize database tables to the project

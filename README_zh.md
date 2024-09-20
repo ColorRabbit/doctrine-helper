@@ -35,7 +35,7 @@
 
 ## 安装
 ```shell
-composer require siburuxue/doctrine-helper
+composer require color-rabbit/doctrine-helper --dev
 ```
 
 ## 同步数据库
