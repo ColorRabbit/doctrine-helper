@@ -88,11 +88,11 @@ class MySQL extends Driver
                 }
             }
             $varType = match ($type) {
-                "bigint", "decimal", "enum", "varchar", "char", "text", "mediumtext", "longtext" => "string",
+                "bigint", "decimal", "enum", "varchar", "char", "text", "mediumtext", "longtext", "year" => "string",
                 "smallint", "tinyint", "mediumint" => "int",
                 "double" => "float",
                 "set", "json" => "array",
-                "date", "time", "datetime", "timestamp", "year" => "\DateTimeInterface",
+                "date", "time", "datetime", "timestamp" => "\DateTimeInterface",
                 default => $type,
             };
             $ormColumnParam = [];
@@ -118,7 +118,7 @@ class MySQL extends Driver
                     $ormColumnParam[] = "type: Types::BLOB";
                 } else if ($type === 'text' || $type === 'mediumtext' || $type === 'longtext') {
                     $ormColumnParam[] = "type: Types::TEXT";
-                } else if (in_array($type, ['char', 'varchar', 'enum'])) {
+                } else if (in_array($type, ['char', 'varchar', 'enum', 'year'])) {
                     $ormColumnParam[] = "type: Types::STRING";
                 } else if ($type === 'json') {
                     $ormColumnParam[] = "type: Types::JSON";
@@ -128,7 +128,7 @@ class MySQL extends Driver
                     $ormColumnParam[] = "type: Types::DATE_MUTABLE";
                 } else if ($type === 'time') {
                     $ormColumnParam[] = "type: Types::TIME_MUTABLE";
-                } else if (in_array($type, ['datetime', 'timestamp', 'year'])) {
+                } else if (in_array($type, ['datetime', 'timestamp'])) {
                     $ormColumnParam[] = "type: Types::DATETIME_MUTABLE";
                 }
                 if (in_array($type, ['char', 'varchar', 'binary', 'varbinary'])) {
@@ -147,11 +147,11 @@ class MySQL extends Driver
                     if (isset($columnDefault)) {
                         $ormColumnOptionParam[] = "\"default\" => $columnDefault";
                     }
-                } else if (in_array($type, ["set", "char", "varchar", 'binary', 'varbinary'])) {
+                } else if (in_array($type, ['set', 'char', 'varchar', 'binary', 'varbinary', 'year'])) {
                     if (isset($columnDefault)) {
                         $ormColumnOptionParam[] = "\"default\" => '$columnDefault'";
                     }
-                } else if (in_array($type, ["date", "time", "datetime", "timestamp", "year"])) {
+                } else if (in_array($type, ["date", "time", "datetime", "timestamp"])) {
                     if (isset($columnDefault)) {
                         $ormColumnOptionParam[] = "\"default\" => '$columnDefault'";
                     }
@@ -180,7 +180,7 @@ class MySQL extends Driver
                     } else {
                         $properties .= "    private \${$columnName} = null;" . PHP_EOL . PHP_EOL;
                     }
-                } else if (in_array($type, ['bigint', 'decimal', 'enum', 'char', 'varchar'])) {
+                } else if (in_array($type, ['bigint', 'decimal', 'enum', 'char', 'varchar', 'year'])) {
                     if (isset($columnDefault)) {
                         $columnDefault = "'{$columnDefault}'";
                         $properties .= "    private ?{$varType} \${$columnName} = {$columnDefault};" . PHP_EOL . PHP_EOL;
@@ -196,7 +196,7 @@ class MySQL extends Driver
                     }
                 } else {
                     if (isset($columnDefault)) {
-                        if (in_array($type, ['date', 'time', 'datetime', 'timestamp', 'year', 'text', 'mediumtext', 'longtext'])) {
+                        if (in_array($type, ['date', 'time', 'datetime', 'timestamp', 'text', 'mediumtext', 'longtext'])) {
                             $columnDefault = 'null';
                         }
                         $properties .= "    private ?{$varType} \${$columnName} = {$columnDefault};" . PHP_EOL . PHP_EOL;
