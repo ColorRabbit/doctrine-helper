@@ -151,6 +151,17 @@ class {$this->entityName}Repository extends ServiceEntityRepository
         \$count = \$list->select('count(p) as count')
             ->getQuery()->getSingleScalarResult();
         \$list = \$list->select('p');
+
+        // 搜索条件 p.param => value
+        if (!empty(\$where)) {
+            \$index = 0;
+            foreach (\$where as \$key => \$value) {
+                \$paramKey = 'param_' . \$index;
+                \$list->andWhere(\$key . ' = :' . \$paramKey)->setParameter(\$paramKey, \$value);
+                \$index++;
+            }
+        }
+
         if (!empty(\$order)) {
             foreach (\$order as \$key => \$value) {
                 \$list->addOrderBy(\$key, \$value);
