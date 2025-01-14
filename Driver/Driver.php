@@ -148,10 +148,6 @@ class {$this->entityName}Repository extends ServiceEntityRepository
     {
         \$list = \$this->createQueryBuilder('p');
 
-        \$count = \$list->select('count(p) as count')
-            ->getQuery()->getSingleScalarResult();
-        \$list = \$list->select('p');
-
         // 搜索条件 p.param => value
         if (!empty(\$where)) {
             \$index = 0;
@@ -168,6 +164,9 @@ class {$this->entityName}Repository extends ServiceEntityRepository
             }
         }
 
+        \$count = \$list->select('count(p) as count')->getQuery()->getSingleScalarResult();
+        \$list = \$list->select('p');
+        
         if (\$length == -1) {
             \$list = \$list->getQuery()->getResult();
 
